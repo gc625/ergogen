@@ -18,30 +18,40 @@ points:
           rows.mod.skip: true 
           key:
             splay: 4
+            column_net: P031
         pinky:
           rows.mod.skip: true
           key:
             splay: 0
+            column_net: P029
         ring:
           rows.mod.skip: true
           key:
             splay: -4
             stagger: 5 
+            column_net: P002
         middle:
           key.stagger: 2.5
+          key.column_net: P115
         index:
           key.stagger: -2.5
+          key.column_net: P113
         inner:
           rows.mod.skip: true
           key.stagger: -2.5
+          key.column_net: P111
       rows:
         mod:
+          row_net: P106
         bottom:
+          row_net: P104
         home:
+          row_net: P011
         top:
+          row_net: P100
         num:
-
-
+          row_net: P024
+  
     thumbs:
       anchor:
         ref: matrix_inner_mod
@@ -52,12 +62,19 @@ points:
       columns:
         layer:
           key.splay: -15 
+          key.column_net: P111
         space:
           key:
             splay: -15
             shift: [2,-2]
+          key.column_net: P010
       rows:
         cluster:
+          row_net: P106
+
+  mirror:
+    ref: matrix_inner_num
+    distance: 90
 
 outlines:
   raw: 
@@ -70,7 +87,9 @@ outlines:
       where: true
       bound: false
       size: [kx-0.5,ky-0.5]
-  board:
+
+
+  board_left:
     - what: polygon
       operation: stack
       fillet: 2
@@ -110,20 +129,61 @@ outlines:
         - ref: matrix_outer_num
           shift: [-0.5px,0.5py]
 
+  board_right:
+    - what: polygon
+      operation: stack
+      fillet: 2
+      points:
+        - ref: mirror_matrix_outer_bottom
+          shift: [-0.5px,-0.5py]
+        - ref: mirror_matrix_middle_mod
+          shift: [-0.5px,-0.5py]
+        - ref: mirror_matrix_middle_mod
+          shift: [0.3px,-0.5py]
+        - ref: mirror_matrix_index_mod
+          shift: [-0.4px,-0.5py]
+        - ref: mirror_matrix_index_mod
+          shift: [0.3px,-0.5py]
+        - ref: mirror_thumbs_layer_cluster
+          shift: [-0.4px,-0.5py]
+        - ref: mirror_thumbs_space_cluster
+          shift: [0.5px,-0.5py]
+        - ref: mirror_thumbs_space_cluster
+          shift: [0.5px,0.5py]
+        - ref: mirror_matrix_inner_num
+          shift: [1.6px,0.5py]
+        - ref: mirror_matrix_inner_num
+          shift: [0.5px,0.5py]
+        - ref: mirror_matrix_index_num
+          shift: [0.5px,0.5px]
+        - ref: mirror_matrix_index_num
+          shift: [-0.3px,0.5py]
+        - ref: mirror_matrix_middle_num
+          shift: [0.4px,0.5py]
+        - ref: mirror_matrix_middle_num
+          shift: [-0.5px,0.5py]
+        - ref: mirror_matrix_ring_num
+          shift: [-0.5px,0.5py]
+        - ref: mirror_matrix_outer_num
+          shift: [0.5px,0.5py]
+        - ref: mirror_matrix_outer_num
+          shift: [-0.5px,0.5py]
+
   combo:
-    - name: board
+    - name: board_left
     - operation: subtract
       name: keys
 
 pcbs:
-  tutorial:
+  left:
     outlines:
       main:
-        outline: board
+        outline: board_left
     footprints:
       choc_hotswap:
         what: choc
-        where: true
+        where: /^(matrix_|thumbs_).*/
+
         params:
           keycaps: true
           reverse: false
@@ -132,17 +192,48 @@ pcbs:
           to: "{{colrow}}"
       diode:
         what: diode
-        where: true
+        where: /^(matrix_|thumbs_).*/
         params:
           from: "{{colrow}}"
           to: "{{row_net}}"
         adjust:
           shift: [0, -5]
-      promicro:
-        what: promicro
+      nice_nano:
+        what: nice_nano
         params:
           orientation: "down"
         where:
           ref.aggregate.parts: [matrix_inner_top]
           shift: [1px,0.25px]
+          rotate: -90
+
+  right:
+    outlines:
+      main:
+        outline: board_right
+    footprints:
+      choc_hotswap:
+        what: choc
+        where: /^(mirror_matrix_|mirror_thumbs_).*/
+        params:
+          keycaps: true
+          reverse: false
+          hotswap: true
+          from: "{{column_net}}"
+          to: "{{colrow}}"
+      diode:
+        what: diode
+        where: /^(mirror_matrix_|mirror_thumbs_).*/
+        params:
+          from: "{{colrow}}"
+          to: "{{row_net}}"
+        adjust:
+          shift: [0, -5]
+      nice_nano:
+        what: nice_nano
+        params:
+          orientation: "down"
+        where:
+          ref.aggregate.parts: [mirror_matrix_inner_top]
+          shift: [-1px,0.25px]
           rotate: -90
